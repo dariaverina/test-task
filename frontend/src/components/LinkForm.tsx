@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { linkService } from '../services/link';
+import { formatDateForServer } from '../utils/date';
 
 export default function LinkForm({ onLinkCreated }: { onLinkCreated: (shortUrl: string) => void }) {
     const [url, setUrl] = useState('');
     const [customSlug, setCustomSlug] = useState('');
+    const [expiresAt, setExpiresAt] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -13,20 +15,37 @@ export default function LinkForm({ onLinkCreated }: { onLinkCreated: (shortUrl: 
         setError('');
 
         try {
-            const response = await linkService.create({
-                original_url: url,
-                custom_slug: customSlug || undefined
-            });
+            const payload: any = { original_url: url };
             
+            if (customSlug.trim()) {
+                payload.custom_slug = customSlug.trim();
+            }
+            
+            if (expiresAt) {
+                payload.expires_at = formatDateForServer(expiresAt);
+            }
+
+            const response = await linkService.create(payload);
             onLinkCreated(response.data.short_url);
             
             setUrl('');
             setCustomSlug('');
-        } catch (err) {
-            setError('Ошибка при создании ссылки');
+            setExpiresAt('');
+        } catch (err: any) {
+            setError(err.response?.data?.message || 'Ошибка при создании ссылки');
         } finally {
             setLoading(false);
         }
+    };
+
+    const getCurrentDateTime = () => {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
     };
 
     return (
@@ -60,6 +79,22 @@ export default function LinkForm({ onLinkCreated }: { onLinkCreated: (shortUrl: 
                     placeholder="your-link"
                     className="w-full p-2 border rounded"
                 />
+            </div>
+
+            <div>
+                <label className="block mb-1 text-sm font-medium">
+                    Срок действия (необязательно)
+                </label>
+                <input
+                    type="datetime-local"
+                    value={expiresAt}
+                    onChange={(e) => setExpiresAt(e.target.value)}
+                    className="w-full p-2 border rounded"
+                    min={getCurrentDateTime()}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                    Оставьте пустым для бессрочной ссылки
+                </p>
             </div>
             
             <button

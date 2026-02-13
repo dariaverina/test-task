@@ -16,8 +16,15 @@ class CreateLinkRequest extends FormRequest
         return [
             'original_url' => 'required|url',
             'custom_slug' => 'nullable|alpha_dash|unique:links,custom_slug|max:50',
-            'expires_at' => 'nullable|date|after:now',
+            'expires_at' => 'nullable|date',
             'is_commercial' => 'boolean'
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'expires_at.after' => 'Дата окончания должна быть в будущем'
         ];
     }
 }
