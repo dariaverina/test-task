@@ -29,26 +29,19 @@ Backend — Laravel 12, frontend — React с TypeScript и Vite.
 - База данных: MySQL 8+
 - Frontend: React 18, TypeScript, Vite
 - Стили: Tailwind CSS
+- Docker
 
 ---
 
 ## Установка и запуск
 
-Команды для запуска без docker:
-
-- Backend (Laravel):
-    cd backend
-    composer install
-    cp .env.example .env
-    настройте .env (база данных)
-    php artisan key:generate
-    php artisan migrate
-    php artisan serve
-
-- Frontend (React):
-    cd frontend
-    npm install
-    npm run dev
+- git clone https://github.com/dariaverina/test-task-adtech.git
+- cd test-task-adtech
+- cp .env.example .env
+- cp backend/.env.example backend/.env
+- cp frontend/.env.example frontend/.env
+- docker-compose up -d --build
+- docker-compose exec php php artisan migrate
 
 - Доступ после запуска:
     Backend: http://localhost:8000
