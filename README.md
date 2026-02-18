@@ -41,6 +41,7 @@ Backend — Laravel 12, frontend — React с TypeScript и Vite.
 - cp backend/.env.example backend/.env
 - cp frontend/.env.example frontend/.env
 - docker-compose up -d --build
+- docker-compose exec php php artisan key:generate
 - docker-compose exec php php artisan migrate
 
 - Доступ после запуска:
